@@ -99,11 +99,11 @@ EOF
 
 # verify CSR has been created
 while true; do
-    if ! kubectl get csr ${csrName}; then
+    kubectl get csr ${csrName}
+    if [ "$?" == "0" ]; then
         break
     fi
 done
-
 # approve and fetch the signed certificate
 kubectl certificate approve ${csrName}
 # verify certificate has been signed
@@ -114,6 +114,7 @@ for _ in $(seq 10); do
     fi
     sleep 1
 done
+echo "serverCert: ${serverCert}"
 if [[ ${serverCert} == '' ]]; then
     echo "ERROR: After approving csr ${csrName}, the signed certificate did not appear on the resource. Giving up after 10 attempts." >&2
     exit 1
